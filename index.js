@@ -43,7 +43,8 @@ app.post("/generate", async (req, res) => {
       details: {
         message: error.message,
         status: error.response?.status,
-        data: error.response?.data,
+        headers: error.response?.headers,
+        config: error.config,  // 顯示實際發送的 config
       },
     });
   }
