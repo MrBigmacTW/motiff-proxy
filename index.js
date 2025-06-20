@@ -1,24 +1,38 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const { exec } = require("child_process");
+const axios = require("axios");
 
 const app = express();
 app.use(bodyParser.json());
 
-app.post("/generate", (req, res) => {
+app.post("/generate", async (req, res) => {
   const prompt = req.body.prompt;
 
-  // [暫時模擬]：實際上可以改成呼叫 MCP / GPT 指令
-  const command = `echo "${prompt}"`;
+  try {
+    // Call Motiff API
+    const response = await axios.post(
+      "https://motiff-proxy.onrender.com/generate", // ⚠️ 替換成實際 API endpoint
+      {
+        prompt: prompt
+      },
+      {
+        headers: {
+          Authorization: "Bearer O06ECiUCosLqQeia47egS5lFhAxWaENF", // ⚠
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`錯誤：${error.message}`);
-      return res.status(500).send("生成失敗");
-    }
+    res.json({
+      message: "✅ 已成功產生圖像",
+      prompt: prompt,
+      result: response.data // 根據回傳格式調整，例如 { image_url: ... }
+    });
 
-    res.json({ message: "已接收到 prompt：" + prompt, 回應: stdout.trim() });
-  });
+  } catch (error) {
+    console.error("❌ Motiff API 呼叫失敗：", error.response?.data || error.message);
+    res.status(500).send("呼叫 Motiff API 失敗");
+  }
 });
 
 const port = process.env.PORT || 3001;
