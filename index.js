@@ -29,11 +29,15 @@ app.post("/generate", async (req, res) => {
       result: response.data // 根據回傳格式調整，例如 { image_url: ... }
     });
 
-  } catch (error) {
-    console.error("❌ Motiff API 呼叫失敗：", error.response?.data || error.message);
-    res.status(500).send("呼叫 Motiff API 失敗");
-  }
-});
+ } catch (error) {
+    // 🐛 詳細錯誤 debug log
+    console.error("❌ Motiff API 呼叫失敗詳細：", {
+      message: error.message,
+      code: error.code,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
