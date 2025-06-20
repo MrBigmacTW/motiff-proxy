@@ -11,33 +11,43 @@ app.post("/generate", async (req, res) => {
   try {
     // Call Motiff API
     const response = await axios.post(
-      "https://motiff-proxy.onrender.com/generate", // ⚠️ 替換成實際 API endpoint
+      "https://motiff-proxy.onrender.com/generate",
       {
-        prompt: prompt
+        prompt: prompt,
       },
       {
         headers: {
-          Authorization: "Bearer O06ECiUCosLqQeia47egS5lFhAxWaENF", // ⚠
-          "Content-Type": "application/json"
-        }
+          Authorization: "Bearer O06ECiUCosLqQeia47egS5lFhAxWaENF",
+          "Content-Type": "application/json",
+        },
       }
     );
 
     res.json({
       message: "✅ 已成功產生圖像",
       prompt: prompt,
-      result: response.data // 根據回傳格式調整，例如 { image_url: ... }
+      result: response.data,
     });
-
- } catch (error) {
+  } catch (error) {
     // 🐛 詳細錯誤 debug log
     console.error("❌ Motiff API 呼叫失敗詳細：", {
       message: error.message,
       code: error.code,
       status: error.response?.status,
       data: error.response?.data,
+      headers: error.response?.headers,
     });
 
+    res.status(500).json({
+      error: "呼叫 Motiff API 失敗",
+      details: {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      },
+    });
+  }
+});
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
