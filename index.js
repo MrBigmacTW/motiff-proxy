@@ -25,5 +25,3 @@ const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`🌈 Motiff Proxy Server 啟動在 http://localhost:${port}`);
 });
-
-});
